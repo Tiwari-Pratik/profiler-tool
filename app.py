@@ -78,7 +78,7 @@ if handle_name_input.strip() != "":
     # st.write([F_ID, F_ID_STR,F_NAME,F_SNAME,F_LOC,F_DESC,F_FOLLOWERS_COUNT, F_FOLLOWING_COUNT, F_STATUS_COUNT, F_CREATED_AT, F_VERIFIED, F_IMAGE_URL])
 
     with display_col:
-        st.image(F_IMAGE_URL, width=300)
+        st.image(F_IMAGE_URL, width=200)
         # st.markdown("**Handle Created date:** {fdate}".format(fdate=F_CREATED_AT))
 
     name_col, sname_col, fol_col, frnd_col, ver_col = st.columns(5)
