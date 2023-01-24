@@ -245,3 +245,28 @@ if handle_name_input.strip() != "":
         with hw_col2:
             st.pyplot(plt)
             st.text("Hashtag Wordcloud")
+        
+        # tweet_timeline_figure = tweet_timeline_fig.write_image("Tweets_Timeline.png")
+        # user_mentions_figure = ufig.write_image("User_Mentions.png")
+        # tweet_ref_figure = tfig.write_image("Tweets_Type.png")
+        # hastag_figure = plt.savefig("Hashtag_cloud.png",dpi=600)
+        # Tweets_data_csv = Tweet_data_df.to_csv("Tweets_Data.csv", encoding="utf-8",index=False)
+
+        @st.cache
+        def convert_df(df):
+            # IMPORTANT: Cache the conversion to prevent computation on every rerun
+            return df.to_csv().encode('utf-8')
+
+        tweets_csv = convert_df(Tweet_data_df)
+        
+
+        confirm_chb = st.checkbox("Do You want to download the Tweets_dataset?",key="confirm_chb")
+
+        if(confirm_chb):
+            dataset_btn = st.download_button(
+                    label="Download Tweets data as CSV",
+                    data=tweets_csv,
+                    file_name='Tweets_data.csv',
+                    mime='text/csv',
+                )
+

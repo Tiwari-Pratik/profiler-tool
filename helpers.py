@@ -68,7 +68,7 @@ def get_handle_tweets(client,handle_id,api):
     #     print(tweet.data)
     #     print(tweet.meta)
         if(tweet.data):
-            print(len(tweet.data))
+            # print(len(tweet.data))
             tweets_pulled += len(tweet.data)
         tweet_data_df = pd.DataFrame(tweet.data)
         total_tweet_data_df = pd.concat([total_tweet_data_df,tweet_data_df],ignore_index=True)
@@ -88,7 +88,7 @@ def get_handle_tweets(client,handle_id,api):
         
             #     total_tweet_includes_media_df = total_tweet_includes_media_df.append(tweet_includes_media_df,ignore_index=True)
 
-        print("Total number of tweets pulled: ",tweets_pulled)
+        # print("Total number of tweets pulled: ",tweets_pulled)
 
     # return [total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df]
     Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api)
