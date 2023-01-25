@@ -267,7 +267,7 @@ if handle_name_input.strip() != "":
         tweets_csv = convert_df(Tweet_data_df)
         
         # st.image(hastag_figure)
-        confirm_chb = st.checkbox("Do You want to download the figures?",key="confirm_chb")
+        confirm_chb = st.checkbox("Do You want to download the Tweets dataset?",key="confirm_chb")
 
         if(confirm_chb):
             dataset_btn = st.download_button(
