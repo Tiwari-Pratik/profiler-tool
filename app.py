@@ -6,6 +6,8 @@ import streamlit.components.v1 as components
 from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import tweepy
+from streamlit_extras.chart_container import chart_container
+
 from helpers import (
     get_handle_info,
     get_handle_tweets,
@@ -141,6 +143,7 @@ if handle_name_input.strip() != "":
                 ]
             ]
 
+
             gd = GridOptionsBuilder.from_dataframe(tweet_df)
             gd.configure_selection(selection_mode="single", use_checkbox=True)
             gridoptions = gd.build()
@@ -190,15 +193,16 @@ if handle_name_input.strip() != "":
                 "Choose marker color", "#EDF2F4", key="tweet_mark_color"
             )
 
-        tweet_timeline_fig = get_tweets_timeline(
+        [tweet_timeline_fig, tweet_timeline_data] = get_tweets_timeline(
             Tweet_data_df,
             sampling=sample_options,
             line_color=tweet_line_color,
             mark_color=tweet_mark_color,
         )
-        st.plotly_chart(
-            tweet_timeline_fig, use_container_width=True, sharing="streamlit"
-        )
+        with chart_container(tweet_timeline_data):
+            st.plotly_chart(
+                tweet_timeline_fig, use_container_width=True, sharing="streamlit"
+            )
 
         [username_df, hashtags_df, ref_tweet_types_df] = get_info_data(Tweet_data_df)
         user_col, hash_col, type_col = st.columns(3)
@@ -222,7 +226,7 @@ if handle_name_input.strip() != "":
                 "Choose marker color", "#D496A7", key="t_mark_color"
             )
 
-        [ufig, tfig, plt] = generate_info_figures(
+        [ufig,u_fig_data_df,tfig,t_fig_data_df,plt] = generate_info_figures(
             username_df,
             hashtags_df,
             ref_tweet_types_df,
@@ -233,13 +237,15 @@ if handle_name_input.strip() != "":
         um_col, tt_col = st.columns(2)
 
         with um_col:
-            st.plotly_chart(ufig, use_container_width=True, sharing="streamlit")
-            st.text("Bar plot of most interacted users")
+            with chart_container(u_fig_data_df):
+                st.plotly_chart(ufig, use_container_width=True, sharing="streamlit")
+                st.text("Bar plot of most interacted users")
         # with hw_col:
         #     st.pyplot(plt)
         with tt_col:
-            st.plotly_chart(tfig, use_container_width=True, sharing="streamlit")
-            st.text("Bar plot showing frequency of Tweet types")
+            with chart_container(t_fig_data_df):
+                st.plotly_chart(tfig, use_container_width=True, sharing="streamlit")
+                st.text("Bar plot showing frequency of Tweet types")
 
         hw_col1, hw_col2, hw_col3 = st.columns(3)
         with hw_col2:
@@ -259,10 +265,32 @@ if handle_name_input.strip() != "":
 
         tweets_csv = convert_df(Tweet_data_df)
         
-
-        confirm_chb = st.checkbox("Do You want to download the Tweets_dataset?",key="confirm_chb")
+        # st.image(hastag_figure)
+        confirm_chb = st.checkbox("Do You want to download the figures?",key="confirm_chb")
 
         if(confirm_chb):
+            # file = open("Profile.md", "w")
+            # file.write("")
+            # file.close()
+            # file = open("Profile.md", "a")
+            # file.write("## Profiler Tool generated Figures")
+            # file.write("**Tweet Timeline Plot**")
+            # file.write('![tweet timeline](data:application/profiler-tool/Tweets_timeline.png)')
+            # file.write("**Interacted User's Bar Plot**")
+            # file.write('![User Mentions](data:application/profiler-tool/User_Mentions.png)')
+            # file.write("**Tweet Types Frequency Bar Plot**")
+            # file.write('![Tweet Type](data:application/profiler-tool/Tweets_Type.png)')
+            # file.write("**Hashtag Wordcloud**")
+            # file.write('![Hashtags](data:application/profiler-tool/Hashtag_cloud.png)')
+            # file.close()
+
+            # with open("Profile.md", "rb") as file:
+            #     btn = st.download_button(
+            #             label="Download Figures",
+            #             data=file,
+            #             file_name="Profile.md",
+            #             # mime="image/png"
+            #         )
             dataset_btn = st.download_button(
                     label="Download Tweets data as CSV",
                     data=tweets_csv,

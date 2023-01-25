@@ -5,6 +5,7 @@ Pillow==9.4.0
 plotly==5.8.0
 python_dateutil==2.8.2
 streamlit==1.17.0
+streamlit_extras==0.2.5
 tweepy==4.9.0
 wordcloud==1.8.1
-streamlit-aggrid
+streamlit_aggrid

@@ -9,6 +9,7 @@ from wordcloud import WordCloud, STOPWORDS , ImageColorGenerator
 import matplotlib.pyplot as plt 
 import numpy as np
 from PIL import Image
+import json
 
 def get_handle_info(api,handle):
     # F_ID = []
@@ -200,7 +201,14 @@ def get_tweets_timeline(df,sampling,line_color,mark_color):
     # fig.update_layout(template = 'ggplot2')
     #pyo.plot(fig, filename='tweets_timeline.html')
     # pyo.plot(fig, filename='Dravidnadu_tweets_created_timeline_monthwise_new.html')
-    return fig
+    fig_str = fig.to_json()
+    fig_data = json.loads(fig_str)
+    x_val = fig_data["data"][0]["x"]
+    y_val = fig_data["data"][0]["y"]
+    fig_data_df = pd.DataFrame()
+    fig_data_df['Dates'] = x_val
+    fig_data_df['Tweet Count'] = y_val
+    return [fig, fig_data_df]
 
 def get_info_data(df):
 
@@ -249,6 +257,13 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     ufig.update_xaxes(showline=True, linewidth=3, linecolor='white')
     ufig.update_yaxes(showline=True, linewidth=3, linecolor='white')
     ufig.update_traces(marker_color=user_col)
+    u_fig_str = ufig.to_json()
+    u_fig_data = json.loads(u_fig_str)
+    u_x_val = u_fig_data["data"][0]["x"]
+    u_y_val = u_fig_data["data"][0]["y"]
+    u_fig_data_df = pd.DataFrame()
+    u_fig_data_df['Usernames'] = u_x_val
+    u_fig_data_df['Interaction Count'] = u_y_val
     # pyo.plot(fig, filename='Dravidnadu_retweeting_accounts.html')
     tdata = go.Bar(x=ref_tweet_types_df['Tweet Type'], y = ref_tweet_types_df['Tweet Counts'])
     tlayout = go.Layout(xaxis=dict(title="Tweet Types"), yaxis=dict(title="Tweet Type Count"),paper_bgcolor='rgba(0, 0, 0,1)',
@@ -266,6 +281,13 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     tfig.update_xaxes(showline=True, linewidth=3, linecolor='white')
     tfig.update_yaxes(showline=True, linewidth=3, linecolor='white')
     tfig.update_traces(marker_color=tweet_col)
+    t_fig_str = tfig.to_json()
+    t_fig_data = json.loads(t_fig_str)
+    t_x_val = t_fig_data["data"][0]["x"]
+    t_y_val = t_fig_data["data"][0]["y"]
+    t_fig_data_df = pd.DataFrame()
+    t_fig_data_df['Tweet types'] = t_x_val
+    t_fig_data_df['Tweet Types Count'] = t_y_val
 
     comment_words = '' 
     stopwords = set(STOPWORDS) 
@@ -295,7 +317,7 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     # plt.savefig("Dravidnadu_hashtag_Wordcloud.jpg",dpi=600)
     # plt.show()
     # 
-    return [ufig,tfig,plt] 
+    return [ufig,u_fig_data_df,tfig,t_fig_data_df,plt] 
 
 
 
