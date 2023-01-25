@@ -10,22 +10,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 import json
+import streamlit as st
 
+@st.cache
 def get_handle_info(api,handle):
-    # F_ID = []
-    # F_ID_STR = []
-    # F_NAME = []
-    # F_SNAME = []
-    # F_LOC = []
-    # F_DESC = []
-    # F_FOLLOWERS_COUNT = []
-    # F_FOLLOWING_COUNT = []
-    # F_STATUS_COUNT = []
-    # F_CREATED_AT = []
-    # F_VERIFIED = []
-   
-
-    # FIELDS = ['Created at','ID','ID String','Name', 'Screen Name', 'Location', 'Description', 'Followers Count', 'Friends Count', 'Status Count', 'Verified']
 
     user = api.get_user(screen_name=handle)
     # print(user._json)
@@ -45,6 +33,7 @@ def get_handle_info(api,handle):
     return [F_ID, F_ID_STR,F_NAME,F_SNAME,F_LOC,F_DESC,F_FOLLOWERS_COUNT, F_FOLLOWING_COUNT, F_STATUS_COUNT, F_CREATED_AT, F_VERIFIED, F_IMAGE_URL]
    
 
+@st.cache
 def get_handle_tweets(client,handle_id,api):
 
     tweet_fields = ['created_at','conversation_id','referenced_tweets','attachments','geo','entities','public_metrics']
@@ -95,6 +84,7 @@ def get_handle_tweets(client,handle_id,api):
     Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api)
     return [Tweet_data_df,total_tweet_data_df, total_tweet_includes_tweets_df]
 
+@st.cache
 def process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api):
     Tweet_data = []
 
@@ -148,7 +138,7 @@ def process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_twee
     Tweet_data_df = pd.DataFrame(Tweet_data)
     return Tweet_data_df
         
-
+@st.cache
 def update_zone(adate):
 
     from_zone = tz.tzutc()
@@ -159,6 +149,7 @@ def update_zone(adate):
 
     return local
 
+@st.cache
 def get_tweets_timeline(df,sampling,line_color,mark_color):
     dates = []
     ids = []
@@ -210,6 +201,7 @@ def get_tweets_timeline(df,sampling,line_color,mark_color):
     fig_data_df['Tweet Count'] = y_val
     return [fig, fig_data_df]
 
+@st.cache
 def get_info_data(df):
 
     all_users_list = df['User Mentions'].to_list()
@@ -239,6 +231,7 @@ def get_info_data(df):
 
     return [username_df, hashtags_df, ref_tweet_types_df]
 
+@st.cache(allow_output_mutation=True)
 def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col,tweet_col):
     
     udata = go.Bar(x=username_df['Usernames'], y = username_df['Count'])

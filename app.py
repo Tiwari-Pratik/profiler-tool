@@ -252,11 +252,6 @@ if handle_name_input.strip() != "":
             st.pyplot(plt)
             st.text("Hashtag Wordcloud")
         
-        # tweet_timeline_figure = tweet_timeline_fig.write_image("Tweets_Timeline.png")
-        # user_mentions_figure = ufig.write_image("User_Mentions.png")
-        # tweet_ref_figure = tfig.write_image("Tweets_Type.png")
-        # hastag_figure = plt.savefig("Hashtag_cloud.png",dpi=600)
-        # Tweets_data_csv = Tweet_data_df.to_csv("Tweets_Data.csv", encoding="utf-8",index=False)
 
         @st.cache
         def convert_df(df):
@@ -269,28 +264,6 @@ if handle_name_input.strip() != "":
         confirm_chb = st.checkbox("Do You want to download the figures?",key="confirm_chb")
 
         if(confirm_chb):
-            # file = open("Profile.md", "w")
-            # file.write("")
-            # file.close()
-            # file = open("Profile.md", "a")
-            # file.write("## Profiler Tool generated Figures")
-            # file.write("**Tweet Timeline Plot**")
-            # file.write('![tweet timeline](data:application/profiler-tool/Tweets_timeline.png)')
-            # file.write("**Interacted User's Bar Plot**")
-            # file.write('![User Mentions](data:application/profiler-tool/User_Mentions.png)')
-            # file.write("**Tweet Types Frequency Bar Plot**")
-            # file.write('![Tweet Type](data:application/profiler-tool/Tweets_Type.png)')
-            # file.write("**Hashtag Wordcloud**")
-            # file.write('![Hashtags](data:application/profiler-tool/Hashtag_cloud.png)')
-            # file.close()
-
-            # with open("Profile.md", "rb") as file:
-            #     btn = st.download_button(
-            #             label="Download Figures",
-            #             data=file,
-            #             file_name="Profile.md",
-            #             # mime="image/png"
-            #         )
             dataset_btn = st.download_button(
                     label="Download Tweets data as CSV",
                     data=tweets_csv,
