@@ -8,3 +8,4 @@ streamlit==1.17.0
 streamlit_extras==0.2.5
 tweepy==4.9.0
 wordcloud==1.8.1
+streamlit_aggrid
