@@ -117,7 +117,7 @@ if handle_name_input.strip() != "":
         total_tweet_data_df,
         total_tweet_includes_tweets_df,
         total_tweet_includes_user_df
-    ] = copy.deepcopy(get_handle_tweets(client, F_ID))
+    ] = get_handle_tweets(client, F_ID)
 
     if len(total_tweet_data_df) > 0:
         data_col, tweet_col = st.columns([3, 2])
@@ -129,9 +129,9 @@ if handle_name_input.strip() != "":
                     handle=handle_name_input, num_tweet=len(total_tweet_data_df)
                 )
             )
-            Tweet_data_df = copy.deepcopy(process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df))
+            Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df)
 
-            tweet_df_copy = copy.deepcopy(Tweet_data_df)
+            tweet_df_copy = Tweet_data_df.copy()
             tweet_df = tweet_df_copy.loc[:,
                 [
                     "Tweet Text",
@@ -231,7 +231,7 @@ if handle_name_input.strip() != "":
                 "Choose marker color", "#D496A7", key="t_mark_color"
             )
 
-        [ufig,u_fig_data_df,tfig,t_fig_data_df,plt] = generate_info_figures(
+        [ufig,u_fig_data_df,tfig,t_fig_data_df,plt, plt_df] = generate_info_figures(
             username_df,
             hashtags_df,
             ref_tweet_types_df,
@@ -254,8 +254,9 @@ if handle_name_input.strip() != "":
 
         hw_col1, hw_col2, hw_col3 = st.columns(3)
         with hw_col2:
-            st.pyplot(plt)
-            st.text("Hashtag Wordcloud")
+            with chart_container(plt_df):
+                st.pyplot(plt)
+                st.text("Hashtag Wordcloud")
         
 
         @st.cache

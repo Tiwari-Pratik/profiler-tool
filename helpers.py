@@ -201,7 +201,7 @@ def get_tweets_timeline(df,sampling,line_color,mark_color):
     fig_data_df['Tweet Count'] = y_val
     return [fig, fig_data_df]
 
-@st.cache
+
 def get_info_data(df):
 
     all_users_list = df['User Mentions'].to_list()
@@ -231,7 +231,7 @@ def get_info_data(df):
 
     return [username_df, hashtags_df, ref_tweet_types_df]
 
-@st.cache(allow_output_mutation=True)
+
 def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col,tweet_col):
     
     udata = go.Bar(x=username_df['Usernames'], y = username_df['Count'])
@@ -309,8 +309,8 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     plt.tight_layout(pad = 0) 
     # plt.savefig("Dravidnadu_hashtag_Wordcloud.jpg",dpi=600)
     # plt.show()
-    # 
-    return [ufig,u_fig_data_df,tfig,t_fig_data_df,plt] 
+    plt_df = hashtags_df.copy()
+    return [ufig,u_fig_data_df,tfig,t_fig_data_df,plt,plt_df] 
 
 
 
