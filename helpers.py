@@ -81,11 +81,11 @@ def get_handle_tweets(client,handle_id,api):
         # print("Total number of tweets pulled: ",tweets_pulled)
 
     # return [total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df]
-    Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api)
-    return [Tweet_data_df,total_tweet_data_df, total_tweet_includes_tweets_df]
+    # Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api)
+    return [total_tweet_data_df, total_tweet_includes_tweets_df,total_tweet_includes_user_df]
 
 @st.cache
-def process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api):
+def process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df):
     Tweet_data = []
 
     for i in range(0, len(total_tweet_data_df)):

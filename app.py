@@ -14,6 +14,7 @@ from helpers import (
     get_tweets_timeline,
     get_info_data,
     generate_info_figures,
+    process_data
 )
 
 
@@ -112,21 +113,23 @@ if handle_name_input.strip() != "":
         )
 
     [
-        Tweet_data_df,
         total_tweet_data_df,
         total_tweet_includes_tweets_df,
+        total_tweet_includes_user_df
     ] = get_handle_tweets(client, F_ID, api)
 
-    if len(Tweet_data_df) > 0:
+    if len(total_tweet_data_df) > 0:
         data_col, tweet_col = st.columns([3, 2])
 
         with data_col:
             loading_text.markdown("")
             st.text(
                 "We fetched {handle}'s latest {num_tweet} tweets".format(
-                    handle=handle_name_input, num_tweet=len(Tweet_data_df)
+                    handle=handle_name_input, num_tweet=len(total_tweet_data_df)
                 )
             )
+            Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df)
+
             tweet_df_copy = Tweet_data_df.copy()
             tweet_df = tweet_df_copy[
                 [
@@ -145,7 +148,7 @@ if handle_name_input.strip() != "":
 
 
             gd = GridOptionsBuilder.from_dataframe(tweet_df)
-            gd.configure_selection(selection_mode="single", use_checkbox=True)
+            gd.configure_selection(selection_mode="single", use_checkbox=True,pre_selected_rows=[0])
             gridoptions = gd.build()
 
             grid_table = AgGrid(
@@ -153,6 +156,7 @@ if handle_name_input.strip() != "":
                 height=400,
                 gridOptions=gridoptions,
                 update_mode=GridUpdateMode.SELECTION_CHANGED,
+                reload_data=False
             )
 
             # st.write('## Selected')
