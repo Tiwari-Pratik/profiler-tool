@@ -7,6 +7,7 @@ from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import tweepy
 from streamlit_extras.chart_container import chart_container
+import copy
 
 from helpers import (
     get_handle_info,
@@ -76,7 +77,7 @@ if handle_name_input.strip() != "":
         F_CREATED_AT,
         F_VERIFIED,
         F_IMAGE_URL,
-    ] = get_handle_info(api, handle_name_input)
+    ] = copy.deepcopy(get_handle_info(api, handle_name_input))
 
     # st.write([F_ID, F_ID_STR,F_NAME,F_SNAME,F_LOC,F_DESC,F_FOLLOWERS_COUNT, F_FOLLOWING_COUNT, F_STATUS_COUNT, F_CREATED_AT, F_VERIFIED, F_IMAGE_URL])
 
@@ -116,7 +117,7 @@ if handle_name_input.strip() != "":
         total_tweet_data_df,
         total_tweet_includes_tweets_df,
         total_tweet_includes_user_df
-    ] = get_handle_tweets(client, F_ID, api)
+    ] = copy.deepcopy(get_handle_tweets(client, F_ID))
 
     if len(total_tweet_data_df) > 0:
         data_col, tweet_col = st.columns([3, 2])
@@ -128,10 +129,10 @@ if handle_name_input.strip() != "":
                     handle=handle_name_input, num_tweet=len(total_tweet_data_df)
                 )
             )
-            Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df)
+            Tweet_data_df = copy.deepcopy(process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df))
 
-            tweet_df_copy = Tweet_data_df.copy()
-            tweet_df = tweet_df_copy[
+            tweet_df_copy = copy.deepcopy(Tweet_data_df)
+            tweet_df = tweet_df_copy.loc[:,
                 [
                     "Tweet Text",
                     "Tweet Created Date",
@@ -144,11 +145,11 @@ if handle_name_input.strip() != "":
                     "User Mentions",
                     "Hashtags",
                 ]
-            ]
+            ].copy()
 
 
             gd = GridOptionsBuilder.from_dataframe(tweet_df)
-            gd.configure_selection(selection_mode="single", use_checkbox=True,pre_selected_rows=[0])
+            gd.configure_selection(selection_mode="single", use_checkbox=True)
             gridoptions = gd.build()
 
             grid_table = AgGrid(

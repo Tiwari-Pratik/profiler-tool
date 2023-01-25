@@ -33,8 +33,8 @@ def get_handle_info(api,handle):
     return [F_ID, F_ID_STR,F_NAME,F_SNAME,F_LOC,F_DESC,F_FOLLOWERS_COUNT, F_FOLLOWING_COUNT, F_STATUS_COUNT, F_CREATED_AT, F_VERIFIED, F_IMAGE_URL]
    
 
-@st.cache
-def get_handle_tweets(client,handle_id,api):
+@st.cache(allow_output_mutation=True)
+def get_handle_tweets(client,handle_id):
 
     tweet_fields = ['created_at','conversation_id','referenced_tweets','attachments','geo','entities','public_metrics']
     expansions = ['attachments.poll_ids', 'attachments.media_keys', 'author_id', 'entities.mentions.username', 'geo.place_id', 'in_reply_to_user_id', 'referenced_tweets.id', 'referenced_tweets.id.author_id']
@@ -78,7 +78,7 @@ def get_handle_tweets(client,handle_id,api):
         
             #     total_tweet_includes_media_df = total_tweet_includes_media_df.append(tweet_includes_media_df,ignore_index=True)
 
-        # print("Total number of tweets pulled: ",tweets_pulled)
+        print("Total number of tweets pulled: ",tweets_pulled)
 
     # return [total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df]
     # Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api)
