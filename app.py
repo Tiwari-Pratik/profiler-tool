@@ -258,6 +258,87 @@ if handle_name_input.strip() != "":
                 st.pyplot(plt)
                 st.text("Hashtag Wordcloud")
         
+        display_df = tweet_df.copy()
+        display_df["Tweet Dates"] = pd.to_datetime(display_df["Tweet Created Date"])
+
+        username_options = ["all"] + username_df["Usernames"].tolist()
+        hashtag_options = ["all"] + hashtags_df["Hashtags"].tolist()
+        # username_options
+        # uname_df_copy = username_df.copy()
+        # st.write(["all"] + uname_df_copy["Usernames"].tolist())
+        username_select = st.sidebar.selectbox("Pick a username to filter",options=username_options, key="username_selectbox")
+        hashtag_select = st.sidebar.selectbox("Pick a hashtag to filter",options=hashtag_options, key="hashtag_selectbox")
+        retweet_slider = st.sidebar.slider("Pick a range of Retweet Count to filter", value=[tweet_df["Retweet Count"].min().item(),tweet_df["Retweet Count"].max().item()],key="retweet_slider")
+        date_slider = st.sidebar.slider("Pick a Date range to filter",
+                      value=[display_df["Tweet Dates"].min().to_pydatetime(),display_df["Tweet Dates"].max().to_pydatetime()],
+                             format="DD/MM/YY")
+        
+        
+
+
+        # st.write(display_df["Tweet Dates"].max())
+
+        all_filt_list = [True for i in range(0,len(tweet_df))]
+        all_filt = pd.Series(all_filt_list)
+        user_filt = pd.Series()
+        hashtag_filt = pd.Series()
+        retweet_filt = pd.Series()
+        date_filt = pd.Series()
+
+        if(username_select != "all"):
+            user_filt = display_df.apply(lambda x: (username_select in x["User Mentions"]), axis=1)
+            # st.write(type(filt))
+            # display_df = tweet_df.loc[filt]
+        else:
+            # display_df = tweet_df.copy()
+            user_filt = all_filt
+        if(hashtag_select != "all"):
+            hashtag_filt = display_df.apply(lambda x: (hashtag_select in x["Hashtags"]), axis=1)
+            # display_df = display_df.loc[filt]
+        else:
+            # display_df = tweet_df.copy()
+            hashtag_filt = all_filt
+        
+        retweet_filt = (display_df["Retweet Count"] >= retweet_slider[0]) & (display_df["Retweet Count"] <= retweet_slider[1])
+        date_filt = (display_df["Tweet Dates"].between(date_slider[0],date_slider[1]))
+
+        total_filt = (user_filt & hashtag_filt & retweet_filt & date_filt)
+        # st.dataframe(display_df.loc[total_filt])
+        final_display_df = display_df.loc[total_filt].copy()
+
+        st.markdown("**Use the filter options provided in the sidebar to get a more detailed view of the dataset**")
+
+        filt_df_col, filt_tweet_col = st.columns([3,2])
+        with filt_df_col:
+            tgd = GridOptionsBuilder.from_dataframe(final_display_df)
+            tgd.configure_selection(selection_mode="single", use_checkbox=True)
+            tgridoptions = tgd.build()
+
+            tgrid_table = AgGrid(
+                    final_display_df,
+                    height=400,
+                    gridOptions=tgridoptions,
+                    update_mode=GridUpdateMode.SELECTION_CHANGED,
+                    reload_data=False
+                )
+
+            # st.write('## Selected')
+            selected_row = tgrid_table["selected_rows"]
+            # st.dataframe(Tweet_data_df)
+        
+        with filt_tweet_col:
+            st.text("Tick the Checkboxes to view the Tweet")
+            if len(selected_row) != 0:
+                tweet_url = "https://twitter.com/{handle}/status/{tweet_id}".format(
+                    handle=handle_name_input, tweet_id=selected_row[0]["Tweet Id Str"]
+                )
+                em_tweet = api.get_oembed(tweet_url)
+                tweet = em_tweet["html"]
+                components.html(tweet, height=400, scrolling=True)
+        
+
+
+
 
         @st.cache
         def convert_df(df):
