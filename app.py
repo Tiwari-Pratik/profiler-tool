@@ -8,6 +8,7 @@ from st_aggrid.grid_options_builder import GridOptionsBuilder
 import tweepy
 from streamlit_extras.chart_container import chart_container
 import copy
+from datetime import datetime
 
 from helpers import (
     get_handle_info,
@@ -15,7 +16,8 @@ from helpers import (
     get_tweets_timeline,
     get_info_data,
     generate_info_figures,
-    process_data
+    process_data,
+    generate_hashtag_plot
 )
 
 
@@ -231,9 +233,8 @@ if handle_name_input.strip() != "":
                 "Choose marker color", "#D496A7", key="t_mark_color"
             )
 
-        [ufig,u_fig_data_df,tfig,t_fig_data_df,plt, plt_df] = generate_info_figures(
+        [ufig,u_fig_data_df,tfig,t_fig_data_df] = generate_info_figures(
             username_df,
-            hashtags_df,
             ref_tweet_types_df,
             user_col=u_mark_color,
             tweet_col=t_mark_color,
@@ -252,10 +253,14 @@ if handle_name_input.strip() != "":
                 st.plotly_chart(tfig, use_container_width=True, sharing="streamlit")
                 st.text("Bar plot showing frequency of Tweet types")
 
+        [plt] = generate_hashtag_plot(hashtags_df)
         hw_col1, hw_col2, hw_col3 = st.columns(3)
         with hw_col2:
-            with chart_container(plt_df):
+            # st.pyplot(plt)
+            # st.plotly_chart(wfig, use_container_width=True, sharing="streamlit")
+            with chart_container(hashtags_df):
                 st.pyplot(plt)
+                # st.plotly_chart(plt, use_container_width=True, sharing="streamlit")
                 st.text("Hashtag Wordcloud")
         
         display_df = tweet_df.copy()
@@ -269,10 +274,11 @@ if handle_name_input.strip() != "":
         username_select = st.sidebar.selectbox("Pick a username to filter",options=username_options, key="username_selectbox")
         hashtag_select = st.sidebar.selectbox("Pick a hashtag to filter",options=hashtag_options, key="hashtag_selectbox")
         retweet_slider = st.sidebar.slider("Pick a range of Retweet Count to filter", value=[tweet_df["Retweet Count"].min().item(),tweet_df["Retweet Count"].max().item()],key="retweet_slider")
-        date_slider = st.sidebar.slider("Pick a Date range to filter",
-                      value=[display_df["Tweet Dates"].min().to_pydatetime(),display_df["Tweet Dates"].max().to_pydatetime()],
-                             format="DD/MM/YY")
-        
+        # date_slider = st.sidebar.slider("Pick a Date range to filter",
+        #               value=[display_df["Tweet Dates"].min().to_pydatetime(),display_df["Tweet Dates"].max().to_pydatetime()],
+        #                      format="DD/MM/YY")
+        start_date_picker = st.sidebar.date_input("Start Date",display_df["Tweet Dates"].min())
+        end_date_picker = st.sidebar.date_input("End Date",display_df["Tweet Dates"].max())
         
 
 
@@ -300,7 +306,9 @@ if handle_name_input.strip() != "":
             hashtag_filt = all_filt
         
         retweet_filt = (display_df["Retweet Count"] >= retweet_slider[0]) & (display_df["Retweet Count"] <= retweet_slider[1])
-        date_filt = (display_df["Tweet Dates"].between(date_slider[0],date_slider[1]))
+        st.write(type(display_df["Tweet Dates"][0]))
+        st.write(type(start_date_picker))
+        date_filt = (display_df["Tweet Created Date"].between(start_date_picker.strftime("%Y-%m-%d"),end_date_picker.strftime("%Y-%m-%d")))
 
         total_filt = (user_filt & hashtag_filt & retweet_filt & date_filt)
         # st.dataframe(display_df.loc[total_filt])

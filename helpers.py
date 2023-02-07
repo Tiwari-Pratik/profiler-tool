@@ -4,6 +4,7 @@ from datetime import datetime
 from dateutil import tz
 import math
 import plotly.offline as pyo
+import plotly.io as pio
 import plotly.graph_objs as go
 from wordcloud import WordCloud, STOPWORDS , ImageColorGenerator
 import matplotlib.pyplot as plt 
@@ -84,7 +85,7 @@ def get_handle_tweets(client,handle_id):
     # Tweet_data_df = process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df,api)
     return [total_tweet_data_df, total_tweet_includes_tweets_df,total_tweet_includes_user_df]
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_tweet_includes_user_df):
     Tweet_data = []
 
@@ -138,7 +139,7 @@ def process_data(total_tweet_data_df, total_tweet_includes_tweets_df, total_twee
     Tweet_data_df = pd.DataFrame(Tweet_data)
     return Tweet_data_df
         
-@st.cache
+# @st.cache(allow_output_mutation=True)
 def update_zone(adate):
 
     from_zone = tz.tzutc()
@@ -149,7 +150,7 @@ def update_zone(adate):
 
     return local
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def get_tweets_timeline(df,sampling,line_color,mark_color):
     dates = []
     ids = []
@@ -177,8 +178,8 @@ def get_tweets_timeline(df,sampling,line_color,mark_color):
     tweet_counts = list(date_df.resample(sample_by)['ids'].count())
 
     data = [go.Scatter(x=tweet_dates, y=tweet_counts, mode='lines+markers', line=dict(color=line_color,width=3,dash='dash',shape='spline'),marker=dict(color=mark_color,size=5))]
-    layout = go.Layout(xaxis=dict(title='Timeline', nticks=16), yaxis=dict(title='No. of Tweets'), paper_bgcolor='rgba(0, 0, 0,1)',
-        plot_bgcolor='rgba(0, 0, 0,1)',
+    layout = go.Layout(xaxis=dict(title='Timeline', nticks=16), yaxis=dict(title='No. of Tweets'), paper_bgcolor='rgba(0,0,0,1)',
+        plot_bgcolor='rgba(0,0,0,1)',
         font=dict(
             family="Gravitas One",
             size=22,
@@ -189,7 +190,34 @@ def get_tweets_timeline(df,sampling,line_color,mark_color):
     fig.update_yaxes(showgrid=False)
     fig.update_xaxes(showline=True, linewidth=3, linecolor='white')
     fig.update_yaxes(showline=True, linewidth=3, linecolor='white')
-    # fig.update_layout(template = 'ggplot2')
+    fig.update_layout(autosize=False)
+
+    pio.templates["lab"] = go.layout.Template(
+    layout_annotations=[
+        dict(
+            name="Lab watermark",
+            text="DisinfoLab",
+            textangle=-0,
+            opacity=0.2,
+            font=dict(color="white", size=50),
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=1,
+            showarrow=False,
+            )
+        ]
+    )
+    fig.update_layout(template = 'lab')
+    # fig.add_layout_image(
+    #     dict(
+    #         source="./myimage.png",
+    #         xref="paper", yref="paper",
+    #         x=1, y=1.05,
+    #         sizex=.2, sizey=.2,
+    #         xanchor="left", yanchor="top"
+    #         )
+    # )
     #pyo.plot(fig, filename='tweets_timeline.html')
     # pyo.plot(fig, filename='Dravidnadu_tweets_created_timeline_monthwise_new.html')
     fig_str = fig.to_json()
@@ -201,7 +229,7 @@ def get_tweets_timeline(df,sampling,line_color,mark_color):
     fig_data_df['Tweet Count'] = y_val
     return [fig, fig_data_df]
 
-
+@st.cache(allow_output_mutation=True)
 def get_info_data(df):
 
     all_users_list = df['User Mentions'].to_list()
@@ -231,8 +259,8 @@ def get_info_data(df):
 
     return [username_df, hashtags_df, ref_tweet_types_df]
 
-
-def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col,tweet_col):
+@st.cache(allow_output_mutation=True)
+def generate_info_figures(username_df, ref_tweet_types_df, user_col,tweet_col):
     
     udata = go.Bar(x=username_df['Usernames'], y = username_df['Count'])
     ulayout = go.Layout(xaxis=dict(title="Accounts"), yaxis=dict(title="Mention Count"),paper_bgcolor='rgba(0, 0, 0,1)',
@@ -250,6 +278,32 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     ufig.update_xaxes(showline=True, linewidth=3, linecolor='white')
     ufig.update_yaxes(showline=True, linewidth=3, linecolor='white')
     ufig.update_traces(marker_color=user_col)
+    pio.templates["lab"] = go.layout.Template(
+    layout_annotations=[
+        dict(
+            name="Lab watermark",
+            text="DisinfoLab",
+            textangle=-0,
+            opacity=0.2,
+            font=dict(color="white", size=50),
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=1,
+            showarrow=False,
+            )
+        ]
+    )
+    ufig.update_layout(template = 'lab')
+    # ufig.add_layout_image(
+    # dict(
+    #     source="./logo.png",
+    #     xref="paper", yref="paper",
+    #     x=1, y=1.05,
+    #     sizex=0.2, sizey=0.2,
+    #     xanchor="left", yanchor="bottom"
+    #     )
+    # )
     u_fig_str = ufig.to_json()
     u_fig_data = json.loads(u_fig_str)
     u_x_val = u_fig_data["data"][0]["x"]
@@ -257,7 +311,6 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     u_fig_data_df = pd.DataFrame()
     u_fig_data_df['Usernames'] = u_x_val
     u_fig_data_df['Interaction Count'] = u_y_val
-    # pyo.plot(fig, filename='Dravidnadu_retweeting_accounts.html')
     tdata = go.Bar(x=ref_tweet_types_df['Tweet Type'], y = ref_tweet_types_df['Tweet Counts'])
     tlayout = go.Layout(xaxis=dict(title="Tweet Types"), yaxis=dict(title="Tweet Type Count"),paper_bgcolor='rgba(0, 0, 0,1)',
         plot_bgcolor='rgba(0, 0, 0,1)',
@@ -274,6 +327,32 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     tfig.update_xaxes(showline=True, linewidth=3, linecolor='white')
     tfig.update_yaxes(showline=True, linewidth=3, linecolor='white')
     tfig.update_traces(marker_color=tweet_col)
+    pio.templates["lab"] = go.layout.Template(
+    layout_annotations=[
+        dict(
+            name="Lab watermark",
+            text="DisinfoLab",
+            textangle=-0,
+            opacity=0.2,
+            font=dict(color="white", size=50),
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=1,
+            showarrow=False,
+            )
+        ]
+    )
+    tfig.update_layout(template = 'lab')
+    # tfig.add_layout_image(
+    # dict(
+    #     source="./logo.png",
+    #     xref="paper", yref="paper",
+    #     x=1, y=1.05,
+    #     sizex=0.2, sizey=0.2,
+    #     xanchor="left", yanchor="bottom"
+    #     )
+    # )
     t_fig_str = tfig.to_json()
     t_fig_data = json.loads(t_fig_str)
     t_x_val = t_fig_data["data"][0]["x"]
@@ -282,35 +361,36 @@ def generate_info_figures(username_df, hashtags_df, ref_tweet_types_df, user_col
     t_fig_data_df['Tweet types'] = t_x_val
     t_fig_data_df['Tweet Types Count'] = t_y_val
 
+    return [ufig,u_fig_data_df,tfig,t_fig_data_df] 
+
+# @st.cache(allow_output_mutation=True)
+def generate_hashtag_plot(hashtags_df):
     comment_words = '' 
     stopwords = set(STOPWORDS) 
-    mask = np.array(Image.open('./comment.png'))
+    mask = np.array(Image.open('./user.png'))
     # print(mask.shape)
 
     comment_words += " ".join(hashtags_df['Hashtags'].to_list())+" "
 
+    colormaps = ['Accent', 'Accent_r', 'Blues', 'Blues_r', 'BrBG', 'BrBG_r', 'BuGn', 'BuGn_r', 'BuPu', 'BuPu_r', 'CMRmap', 'CMRmap_r', 'Dark2', 'Dark2_r', 'GnBu', 'GnBu_r', 'Greens', 'Greens_r', 'Greys', 'Greys_r', 'OrRd', 'OrRd_r', 'Oranges', 'Oranges_r', 'PRGn', 'PRGn_r', 'Paired', 'Paired_r', 'Pastel1', 'Pastel1_r', 'Pastel2', 'Pastel2_r', 'PiYG', 'PiYG_r', 'PuBu', 'PuBuGn', 'PuBuGn_r', 'PuBu_r', 'PuOr', 'PuOr_r', 'PuRd', 'PuRd_r', 'Purples', 'Purples_r', 'RdBu', 'RdBu_r', 'RdGy', 'RdGy_r', 'RdPu', 'RdPu_r', 'RdYlBu', 'RdYlBu_r', 'RdYlGn', 'RdYlGn_r', 'Reds', 'Reds_r', 'Set1', 'Set1_r', 'Set2', 'Set2_r', 'Set3', 'Set3_r', 'Spectral', 'Spectral_r', 'Wistia', 'Wistia_r', 'YlGn', 'YlGnBu', 'YlGnBu_r', 'YlGn_r', 'YlOrBr', 'YlOrBr_r', 'YlOrRd', 'YlOrRd_r', 'afmhot', 'afmhot_r', 'autumn', 'autumn_r', 'binary', 'binary_r', 'bone', 'bone_r', 'brg', 'brg_r', 'bwr', 'bwr_r', 'cividis', 'cividis_r', 'cool', 'cool_r', 'coolwarm', 'coolwarm_r', 'copper', 'copper_r', 'cubehelix', 'cubehelix_r', 'flag', 'flag_r', 'gist_earth', 'gist_earth_r', 'gist_gray', 'gist_gray_r', 'gist_heat', 'gist_heat_r', 'gist_ncar', 'gist_ncar_r', 'gist_rainbow', 'gist_rainbow_r', 'gist_stern', 'gist_stern_r', 'gist_yarg', 'gist_yarg_r', 'gnuplot', 'gnuplot2', 'gnuplot2_r', 'gnuplot_r', 'gray', 'gray_r', 'hot', 'hot_r', 'hsv', 'hsv_r', 'inferno', 'inferno_r', 'jet', 'jet_r', 'magma', 'magma_r', 'nipy_spectral', 'nipy_spectral_r', 'ocean', 'ocean_r', 'pink', 'pink_r', 'plasma', 'plasma_r', 'prism', 'prism_r', 'rainbow', 'rainbow_r', 'seismic', 'seismic_r', 'spring', 'spring_r', 'summer', 'summer_r', 'tab10', 'tab10_r', 'tab20', 'tab20_r', 'tab20b', 'tab20b_r', 'tab20c', 'tab20c_r', 'terrain', 'terrain_r', 'turbo', 'turbo_r', 'twilight', 'twilight_r', 'twilight_shifted', 'twilight_shifted_r', 'viridis', 'viridis_r', 'winter', 'winter_r']
+
     wordcloud = WordCloud(
         width = 100, height = 100,
         random_state=2, background_color='black',
-        colormap='rainbow', collocations=False,
+        colormap='Dark2', collocations=False,
         min_font_size = 6,
         stopwords = stopwords,
         contour_color='#dd0f24',
-        contour_width=1,
+        contour_width=0,
         mask=mask
         ).generate(comment_words)
 
     # image_colors = ImageColorGenerator(mask)
 
     # plot the WordCloud image                        
-    plt.figure(figsize = (2, 2), facecolor = None) 
+    plt.figure(figsize = (8, 8), facecolor = None) 
     plt.imshow(wordcloud) 
     plt.axis("off") 
-    plt.tight_layout(pad = 0) 
-    # plt.savefig("Dravidnadu_hashtag_Wordcloud.jpg",dpi=600)
-    # plt.show()
-    plt_df = hashtags_df.copy()
-    return [ufig,u_fig_data_df,tfig,t_fig_data_df,plt,plt_df] 
-
-
-
+    plt.tight_layout(pad = 0)
+    # plt_df = hashtags_df.copy() 
+    return [plt]
