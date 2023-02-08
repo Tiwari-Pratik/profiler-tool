@@ -208,7 +208,7 @@ def get_tweets_timeline(df,sampling,line_color,mark_color):
             )
         ]
     )
-    fig.update_layout(template = 'lab')
+    # fig.update_layout(template = 'lab')
     # fig.add_layout_image(
     #     dict(
     #         source="./myimage.png",
@@ -294,7 +294,7 @@ def generate_info_figures(username_df, ref_tweet_types_df, user_col,tweet_col):
             )
         ]
     )
-    ufig.update_layout(template = 'lab')
+    # ufig.update_layout(template = 'lab')
     # ufig.add_layout_image(
     # dict(
     #     source="./logo.png",
@@ -343,7 +343,7 @@ def generate_info_figures(username_df, ref_tweet_types_df, user_col,tweet_col):
             )
         ]
     )
-    tfig.update_layout(template = 'lab')
+    # tfig.update_layout(template = 'lab')
     # tfig.add_layout_image(
     # dict(
     #     source="./logo.png",

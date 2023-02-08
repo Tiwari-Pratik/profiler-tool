@@ -42,12 +42,26 @@ api = tweepy.API(auth, wait_on_rate_limit=True)
 
 st.set_page_config(
     page_title="Profiler",
-    page_icon=None,
+    page_icon="./logo_icon.png",
     layout="wide",
     initial_sidebar_state="auto",
-    menu_items=None,
+    menu_items=None
 )
 
+hide_menu_style = """
+        <style>
+        #MainMenu {visibility: hidden;}
+        </style>
+        """
+st.markdown(hide_menu_style, unsafe_allow_html=True)
+
+logo_col,logo_text_col = st.columns([1,5])
+with logo_col:
+    st.image("./logo.png",use_column_width=True)
+    # st.markdown("**DisinfoLab**")
+
+# with logo_text_col:
+#     st.markdown("**DisinfoLab**")
 
 st.markdown("# A Tool for Profiling a Twitter handle")
 
