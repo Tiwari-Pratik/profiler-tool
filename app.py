@@ -320,8 +320,7 @@ if handle_name_input.strip() != "":
             hashtag_filt = all_filt
         
         retweet_filt = (display_df["Retweet Count"] >= retweet_slider[0]) & (display_df["Retweet Count"] <= retweet_slider[1])
-        st.write(type(display_df["Tweet Dates"][0]))
-        st.write(type(start_date_picker))
+
         date_filt = (display_df["Tweet Created Date"].between(start_date_picker.strftime("%Y-%m-%d"),end_date_picker.strftime("%Y-%m-%d")))
 
         total_filt = (user_filt & hashtag_filt & retweet_filt & date_filt)
