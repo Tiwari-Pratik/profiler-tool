@@ -123,7 +123,7 @@ if handle_name_input.strip() != "":
 
     loading_text = st.empty()
     if F_NAME:
-        loading_text.text(
+        loading_text.info(
             "Please wait as we fetch the latest tweets from {handle}'s timeline".format(
                 handle=handle_name_input
             )
@@ -140,7 +140,7 @@ if handle_name_input.strip() != "":
 
         with data_col:
             loading_text.markdown("")
-            st.text(
+            st.success(
                 "We fetched {handle}'s latest {num_tweet} tweets".format(
                     handle=handle_name_input, num_tweet=len(total_tweet_data_df)
                 )
@@ -327,7 +327,7 @@ if handle_name_input.strip() != "":
         # st.dataframe(display_df.loc[total_filt])
         final_display_df = display_df.loc[total_filt].copy()
 
-        st.markdown("**Use the filter options provided in the sidebar to get a more detailed view of the dataset**")
+        st.info("Use the filter options provided in the sidebar to get a more detailed view of the dataset")
 
         filt_df_col, filt_tweet_col = st.columns([3,2])
         with filt_df_col:
